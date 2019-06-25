@@ -1,0 +1,10 @@
+E:\Projects\apl\bin\Debug\Antiplagiarism.exe.config
+E:\Projects\apl\bin\Debug\Antiplagiarism.exe
+E:\Projects\apl\bin\Debug\Antiplagiarism.pdb
+E:\Projects\apl\bin\Debug\nunit.framework.dll
+E:\Projects\apl\bin\Debug\nunitlite.dll
+E:\Projects\apl\obj\Debug\Antiplagiarism.csprojAssemblyReference.cache
+E:\Projects\apl\obj\Debug\Antiplagiarism.csproj.CoreCompileInputs.cache
+E:\Projects\apl\obj\Debug\Antiplagiarism.csproj.CopyComplete
+E:\Projects\apl\obj\Debug\Antiplagiarism.exe
+E:\Projects\apl\obj\Debug\Antiplagiarism.pdb
