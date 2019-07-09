@@ -52,15 +52,12 @@ namespace Antiplagiarism
                 return minDocument.Length - minDocument.Index;
 
             var tokenDistance = TokenDistanceCalculator.GetTokenDistance(minDocument.Current, maxDocument.Current);
-            if (tokenDistance < 1)
-            {
-                return GetMinDistance(minDocument.GetNext, maxDocument.GetNext) + tokenDistance;
-            }
 
+            var equalToken = GetMinDistance(minDocument.GetNext, maxDocument.GetNext) + tokenDistance;
             var addTokenDistance = GetMinDistance(minDocument, maxDocument.GetNext) + 1;
             var replaceTokenDistance = GetMinDistance(minDocument.GetNext, maxDocument.GetNext) + 1;
 
-            return Math.Min(addTokenDistance, replaceTokenDistance);
+            return Math.Min(Math.Min(addTokenDistance, replaceTokenDistance), equalToken);
         }
 
         private class Document
