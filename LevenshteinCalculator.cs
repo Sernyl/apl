@@ -36,8 +36,11 @@ namespace Antiplagiarism
 
         private double GetMinDistance(Document minDocument, Document maxDocument)
         {
-            if (minDocument.IsEnd || maxDocument.IsEnd)
-                return maxDocument.Length - minDocument.Length;
+            if (minDocument.IsEnd)
+                return maxDocument.Length - maxDocument.Index;
+
+            if (maxDocument.IsEnd)
+                return minDocument.Length - minDocument.Index;
 
             var tokenDistance = TokenDistanceCalculator.GetTokenDistance(minDocument.Current, maxDocument.Current);
             if (tokenDistance < 1)
@@ -45,7 +48,7 @@ namespace Antiplagiarism
                 return GetMinDistance(minDocument.GetNext, maxDocument.GetNext) + tokenDistance;
             }
 
-            var addTokenDistance = GetMinDistance(minDocument.GetNext, maxDocument) + 1;
+            var addTokenDistance = GetMinDistance(minDocument, maxDocument.GetNext) + 1;
             var replaceTokenDistance = GetMinDistance(minDocument.GetNext, maxDocument.GetNext) + 1;
 
             return Math.Min(addTokenDistance, replaceTokenDistance);
@@ -65,6 +68,10 @@ namespace Antiplagiarism
             public int Length => Tokens.Count;
             public bool IsEnd => Index == Tokens.Count;
             public string Current => Tokens[Index];
+            public override string ToString()
+            {
+                return $"{Current} [{Index}]";
+            }
         }
     }
 }
