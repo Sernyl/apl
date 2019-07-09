@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 // Каждый документ — это список токенов. То есть List<string>.
 // Вместо этого будем использовать псевдоним DocumentTokens.
@@ -26,26 +27,44 @@ namespace Antiplagiarism
 
         private ComparisonResult CompareDocuments(DocumentTokens firstDocument, DocumentTokens secondDocument)
         {
-            var sumDistances = 0d;
-            var tokensCount = firstDocument.Count < secondDocument.Count ? secondDocument.Count : firstDocument.Count;
-            firstDocument = AddSpaces(firstDocument, tokensCount);
-            secondDocument = AddSpaces(secondDocument, tokensCount);
-            for (var i = 0; i < tokensCount; i++)
-            {
-                sumDistances += TokenDistanceCalculator.GetTokenDistance(firstDocument[i], secondDocument[i]);
-            }
+            var minDocument = firstDocument.Count > secondDocument.Count ? secondDocument : firstDocument;
+            var maxDocument = firstDocument.Count > secondDocument.Count ? firstDocument : secondDocument;
+            var distance = GetMinDistance(new Document(minDocument, 0), new Document(maxDocument, 0));
 
-            return new ComparisonResult(firstDocument, secondDocument, sumDistances);
+            return new ComparisonResult(firstDocument, secondDocument, distance);
         }
 
-        private DocumentTokens AddSpaces(DocumentTokens document, int length)
+        private double GetMinDistance(Document minDocument, Document maxDocument)
         {
-            for (var i = document.Count; i < length; i++)
+            if (minDocument.IsEnd || maxDocument.IsEnd)
+                return maxDocument.Length - minDocument.Length;
+
+            var tokenDistance = TokenDistanceCalculator.GetTokenDistance(minDocument.Current, maxDocument.Current);
+            if (tokenDistance < 1)
             {
-                document.Add(" ");
+                return GetMinDistance(minDocument.GetNext, maxDocument.GetNext) + tokenDistance;
             }
 
-            return document;
+            var addTokenDistance = GetMinDistance(minDocument.GetNext, maxDocument) + 1;
+            var replaceTokenDistance = GetMinDistance(minDocument.GetNext, maxDocument.GetNext) + 1;
+
+            return Math.Min(addTokenDistance, replaceTokenDistance);
+        }
+
+        private class Document
+        {
+            public Document(DocumentTokens tokens, int index)
+            {
+                Tokens = tokens;
+                Index = index;
+            }
+
+            public Document GetNext => new Document(Tokens, Index + 1);
+            public DocumentTokens Tokens { get; }
+            public int Index { get; }
+            public int Length => Tokens.Count;
+            public bool IsEnd => Index == Tokens.Count;
+            public string Current => Tokens[Index];
         }
     }
 }
