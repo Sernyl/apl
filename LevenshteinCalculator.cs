@@ -27,11 +27,20 @@ namespace Antiplagiarism
 
         private ComparisonResult CompareDocuments(DocumentTokens firstDocument, DocumentTokens secondDocument)
         {
-            var minDocument = firstDocument.Count > secondDocument.Count ? secondDocument : firstDocument;
-            var maxDocument = firstDocument.Count > secondDocument.Count ? firstDocument : secondDocument;
-            var distance = GetMinDistance(new Document(minDocument, 0), new Document(maxDocument, 0));
+            return new ComparisonResult(firstDocument, secondDocument, GetMin(firstDocument, secondDocument));
+        }
 
-            return new ComparisonResult(firstDocument, secondDocument, distance);
+        private double GetMin(DocumentTokens firstDocument, DocumentTokens secondDocument)
+        {
+            if (firstDocument.Count > secondDocument.Count)
+                return GetMinDistance(new Document(secondDocument, 0), new Document(firstDocument, 0));
+
+            if (firstDocument.Count < secondDocument.Count)
+                return GetMinDistance(new Document(firstDocument, 0), new Document(secondDocument, 0));
+
+            var first = GetMinDistance(new Document(secondDocument, 0), new Document(firstDocument, 0));
+            var second = GetMinDistance(new Document(firstDocument, 0), new Document(secondDocument, 0));
+            return Math.Min(first, second);
         }
 
         private double GetMinDistance(Document minDocument, Document maxDocument)
